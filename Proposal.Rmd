@@ -16,8 +16,11 @@ ParkScope — Patterns, People, and Places in NYC Special Events
 
 ## The motivation for this project
 
+New York sells itself on vibrant public life—but a city’s real magnetism shows up in how well it shares its spaces and resources. Recreation and cultural events can boost health, knit communities together, and energize neighborhoods. Yet across NYC, population density, demographics, and access to parks vary dramatically. Are we programming public events where people actually are—and where they’re most needed?
+Using NYC Parks’ Special Events data (one-off fitness, sports, dance, film, and concert events), we will map and model how event types distribute across the city’s geography and population patterns. Our goal is to surface clustering, gaps, and inequities, identifying neighborhoods saturated with options versus areas underserved. The findings can inform more equitable programming, guiding agencies and partners to place the right events in the right places, and ultimately make NYC’s public realm more inclusive, healthy, and alive.
 
 ## The intended final products
+
 **Exploratory Data Analysis:**          
 Descriptive statistics: Descriptive analyses of NYC Parks special events, focusing on event types, frequency,  duration, and geographic distribution across boroughs and seasons.          
 Visualization: Summarize how event activity varies by time of year, park location, and event category.   
