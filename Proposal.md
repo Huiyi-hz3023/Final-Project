@@ -12,7 +12,7 @@ Yuyue Ma *ym3077*
 
 ## The tentative project title
 
-ParkScope — Patterns, People, and Places in NYC Special Events
+*ParkScope — Patterns, People, and Places in NYC Special Events*
 
 ## The motivation for this project
 
@@ -36,15 +36,14 @@ make NYC’s public realm more inclusive, healthy, and alive.
 **Exploratory Data Analysis:**  
 Descriptive statistics: Descriptive analyses of NYC Parks special
 events, focusing on event types, frequency, duration, and geographic
-distribution across boroughs and seasons.  
-Visualization: Summarize how event activity varies by time of year, park
-location, and event category.
+distribution across boroughs and seasons. We will summarize how event
+activity varies by time of year, park location, and event category.
 
-**Spatial and Temporal Analysis** Using mapping tools and time-series
-visualizations, we will explore spatial clustering and seasonal trends
-in park events. This analysis will identify whether certain boroughs or
-neighborhoods host more frequent events and how park activity changes
-over time.
+**Spatial and Temporal Analysis** Using interactive mapping tools and
+time-series visualizations, we will explore spatial clustering and
+seasonal trends in park events. This analysis will identify whether
+certain boroughs or neighborhoods host more frequent events and how park
+activity changes over time.
 
 **Equity and Accessibility Assessment** Using demographic and population
 data from the U.S. Census and NYC Open Data, we will evaluate the
@@ -55,18 +54,51 @@ communities.
 
 ## The anticipated data sources
 
-Dataset will be the *Parks Special Events* from *NYC Open Data*. This
-data set includes detailed information on public events held in New York
-City parks.  
-Relevant indices:  
-–Group Name/Partner  
-–Borough  
-–Location  
-–Event Name & Type  
-–Attendance  
-–Category
+Dataset will be the [*Parks Special
+Events*](https://data.cityofnewyork.us/Recreation/Parks-Special-Events/6v4b-5gp4/about_data)
+from *NYC Open Data*. This data set includes detailed information on
+public events held in New York City parks.  
+Relevant indices include:  
+- Group Name/Partner  
+- Borough  
+- Location  
+- Event Name & Type  
+- Attendance  
+- Category
+
+We will also use population data from
+[Census.gov](https://data.census.gov/).
 
 ## The planned analyses / visualizations / coding challenges
+
+To clean the data, we will standardize column names, trim and fix text,
+parse the date-time into useful parts (date, year, month), normalize
+event type and category, split the audience field into flags (kids,
+teens, adults, seniors, general). We then join neighborhoods and
+population counts so we can calculate events per 10,000 residents for
+the equity view.
+
+Our analysis will start with a clear descriptive overview. We will count
+events by borough, neighborhood, event type, partner, and audience
+(kids, teens, adults, seniors). We will check when events happen during
+the year and which places host them most often. Next, we will build a
+“seasonality fingerprint”: a month-by-event-type summary for each
+borough to show peaks and dips. We will also examine spatial patterns to
+see clusters and gaps across neighborhoods. To assess equity, we will
+join population data and compare population density with event
+frequency. We will also compare audience tags across places (for
+example, whether kids’ events are evenly available).
+
+Using `leaflet`, Users can explore a map (points or heat) and filter by
+borough, neighborhood, event type, audience, and date range. Trend
+panels will show seasonal/monthly totals and audience mix. Each result
+will have an event card with time, place, type, and audience.
+
+Our main coding challenges are data cleaning and mapping. The Audience
+column is not standardized, so we must split multi-value strings and map
+many variants to flags. To generate an interactive map, geocoding is
+required because the dataset only includes the names of the parks as
+locations.
 
 ## The planned timeline
 
