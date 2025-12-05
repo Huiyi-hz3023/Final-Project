@@ -227,6 +227,16 @@ patterns_plot
 
 ![](data_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
+Figure displays violin–boxplots of attendance by season, time of day,
+borough, event type, and location type. These plots summarize both the
+distribution (violin shape) and central tendency (box plot) for each
+category, allowing visual comparison of how attendance varies across
+park events. We restricted the y-axis to 0–250 attendees because most
+events fall within this range, while a small number of very large events
+have much higher attendance. Without this limit, those extreme values
+compress the main body of the data and make differences between typical
+events difficult to see.
+
 ``` r
 plot_time_season =
   parkevent |>
@@ -254,17 +264,18 @@ plot_borough_season =
   parkevent |>
   group_by(borough, season) |>
   summarize(mean_attendance = mean(attendance)) |>
-  ggplot(aes(x = borough, 
+  ggplot(aes(x = season, 
              y = mean_attendance, 
-             color = season, 
-             group = season)) +
+             color = borough, 
+             group = borough)) +
   geom_line() +
   geom_point() +
+   scale_color_brewer(palette = "Dark2") +  
   labs(
-    title = "Mean Attendance by Borough Across Seasons",
-    x = "Borough",
+    title = "Mean Attendance by Seasons Across Borough",
+    x = "Season",
     y = "Mean Attendance",
-    color = "Season") +
+    color = "borough") +
   theme_minimal()
 ```
 
@@ -282,16 +293,27 @@ Seasonal_plot
 
 ![](data_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
+The first plot shows how mean attendance varies by time of day across
+seasons. Spring consistently has the highest turnout, especially in the
+afternoon, while Winter shows the sharpest decline at midnight. Fall
+attendance remains relatively stable across all times, whereas Summer
+gradually increases into the evening. The second plot compares mean
+attendance by seasons across borough. Staten Island and Queens show the
+highest seasonal peaks, particularly in Spring. Brooklyn and Manhattan
+maintain moderate attendance across seasons, while the Bronx shows the
+lowest and least variable averages. Together, these trends highlight
+clear seasonal and geographic differences in NYC park event engagement.
+
 ``` r
 plot_calendar =
   ggplot(parkevent, 
          aes(x = month(date, label = TRUE, abbr = TRUE), 
              y = attendance)) +
-  geom_point(alpha = 0.2, color = "gray") +
+  geom_point(alpha = 0.2, color = "gray70") +
   stat_summary(fun = mean, geom = "line", aes(group = 1),
-               color = "black", size = 1) +
+               color = "cornflowerblue", size = 1) +
   stat_summary(fun = mean, geom = "point",
-               color = "black", size = 2) +
+               color = "cornflowerblue", size = 2) +
   labs(
     title = "Attendance Over the Calendar Year",
     x = "Month",
@@ -311,3 +333,14 @@ plot_calendar
 ```
 
 ![](data_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+This plot shows how park event attendance varies throughout the calendar
+year by combining individual event points with a smoothed monthly trend
+line. Grey points display the full distribution of attendance for all
+events, allowing visualization of variability within each month. Monthly
+averages are overlaid as a blue line to highlight broader seasonal
+patterns that daily fluctuations may obscure. The results show a dip in
+February, rising attendance during spring, a slight decline in
+midsummer, and another increase in October and December. Using monthly
+means helps reveal consistent seasonal trends while still preserving the
+underlying data distribution for context and interpretation.
