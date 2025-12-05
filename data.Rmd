@@ -47,3 +47,15 @@ parkevent = read.csv("Parks_Special_Events_20251204.csv") |>
     
 ```
 
+#check 
+```{r}
+parkevent |> 
+  count(audience)
+parkevent |> 
+  count(location)
+parkevent |> 
+  count(borough)
+parkevent |> 
+  count(category)
+```
+
