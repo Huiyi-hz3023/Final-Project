@@ -31,13 +31,10 @@ parkevent = read.csv("Parks_Special_Events_20251204.csv") |>
       month %in% c("Jun","Jul","Aug") ~ "Summer",
       month %in% c("Sep","Oct","Nov") ~ "Fall",
       month %in% c("Dec","Jan","Feb") ~ "Winter")) |> 
-  rename(type = event_type) |> 
   select(
     -unit,
     -group_name_partner,
     -date_and_time,
-    -location_type,
-    -event_name,
     -classification,
     -source) |> 
   select(
@@ -57,5 +54,7 @@ parkevent |>
   count(borough)
 parkevent |> 
   count(category)
+parkevent |> 
+  count(type)
 ```
 
