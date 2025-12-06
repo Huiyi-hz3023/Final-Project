@@ -89,11 +89,6 @@ parkevent = read.csv("Parks_Special_Events_20251204.csv") |>
            attendance != "")
 ```
 
-    ## Warning: There was 1 warning in `mutate()`.
-    ## ℹ In argument: `attendance = as.numeric(attendance)`.
-    ## Caused by warning:
-    ## ! NAs introduced by coercion
-
 We cleaned the dataset to prepare it for analyzing attendance as the
 primary outcome and key predictors including season, event_type,
 borough, location_type, and time_period. Date-time information was
