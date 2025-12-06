@@ -36,18 +36,19 @@ Table 1 summarizes the distribution of attendance across all post-COVID events, 
 
 # Table 2: Attendance summary by different variables
 ```{r}
-table_vars <- c("month","season", "time_period", "borough", "event_type","location_type")
+table_vars <- c("season", "time_period", "borough", "event_type","location_type")
 
 describe_by_group <- function(var) {
   parkevent |>
     group_by(across(all_of(var))) |>
     summarize(
-      Count  = n(),
-      Mean   = mean(attendance, na.rm = TRUE),
-      Median = median(attendance, na.rm = TRUE),
-      SD    = sd(attendance, na.rm = TRUE),
-      Min    = min(attendance, na.rm = TRUE),
-      Max    = max(attendance, na.rm = TRUE),
+      Count= n(),
+      Mean= mean(attendance, na.rm = TRUE),
+      Median= median(attendance, na.rm = TRUE),
+      SD= sd(attendance, na.rm = TRUE),
+      Min = min(attendance, na.rm = TRUE),
+      Max = max(attendance, na.rm = TRUE),
+      Sum = sum(attendance, na.rm = TRUE),
       .groups = "drop"
     ) |>
     rename(level = !!var) |>
@@ -62,7 +63,7 @@ summary_all <- summary_all |>
   ungroup()
 knitr::kable(
   summary_all |>
-    select(variable = variable_disp, level, Count, Mean, Median, SD, Min, Max),
+    select(variable = variable_disp, level, Count, Mean, Median, SD, Min, Max,Sum),
   digits  = 2,
   caption = "Attendance Summary by Subgroup"
 )
