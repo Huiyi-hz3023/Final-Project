@@ -6,8 +6,11 @@ output:
     toc_float: true
 ---
 
-## (Research Topic)
-
+<h1 style="font-size: 48px; font-weight: 700; text-align: center;">
+The Pulse of the Park  
+</h1>      
+        
+            
 <iframe width="800" height="450"
         src="https://www.youtube.com/embed/JDdLdAUY-vc&list=PLD14Rz0JtYhiUdqmjQN4totfX31Rz2RMq&index=2"
         allowfullscreen></iframe>
@@ -18,10 +21,13 @@ New York sells itself on vibrant public life—but a city’s real magnetism sho
 ## Team Member
 - Xiaoqian(**S**elina) Lyu -- MPH EPIDEMIOLOGY
 - **M**iranda Chen -- MPH EPIDEMIOLOGY
-- Yiyang(**A**lvin) Jiao -- MS BIOSTATS
-- Huiyi(**C**issie) Zhu -- MS EPIDEMIOLOGY
+- Yiyang(**A**lvin) Jiao -- MPH BIOSTATS
+- Huiyi(**C**ece) Zhu -- MS EPIDEMIOLOGY
 - Yuyue(**K**arol) Ma -- MS EPIDEMIOLOGY
 
 Here is a picture of our **SMACK** team event.
 
-![](images/IMG_5104.JPG){width=40%}
+![](team_photo/team_photo.JPG){width=60%}
+
+
+

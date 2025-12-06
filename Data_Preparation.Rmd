@@ -18,6 +18,24 @@ Relevant indices include:
 - Attendance        
 - Category      
 
+Key Variables:  
+- `date`: Calendar date of event.  
+- `year`: Event year.  
+- `month`:  Event month (labeled).  
+- `day`: Event day of month.  
+- `time`: Time of event (HH:MM:SS).  
+- `season`: Season of event (Spring, Summer, Fall, Winter).  
+- `time_period`: Categorical time window: Morning, Afternoon, Night, Midnight.  
+- `borough`: Borough where the event occurred.  
+- `location_type`: Type of location within the park system (e.g., Recreation Center, Park Area).  
+- `event_type`: Event content (e.g., Sports, Arts & Culture).  
+- `category`: Purpose of the event.  
+- `kids_friendly`: Indicator -- TRUE if event accessible to children/General Public.  
+- `senior_friendly`: Indicator -- TRUE if event accessible to seniors/General Public.  
+- `adults_only`:  Indicator -- TRUE if event excludes child-oriented groups.  
+- `attendance`: Number of participants attending the event.
+
+
 ```{r message = FALSE, warning = FALSE, include=FALSE}
 library(tidyverse)
 library(janitor)
