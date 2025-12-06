@@ -375,9 +375,8 @@ div.tocify {
 
 <div id="descriptive-analysis" class="section level2">
 <h2>Descriptive Analysis</h2>
-<div id="table-1-attendance-summary-by-different-variables"
-class="section level3">
-<h3>Table 1: Attendance summary by different variables</h3>
+<div id="table-1-attendance-summary-overall" class="section level3">
+<h3>Table 1: Attendance summary overall</h3>
 <pre class="r"><code>parkevent |&gt;
   summarize(
     Mean = mean(attendance),
@@ -811,7 +810,8 @@ plot_type =
     title = &quot;By Event Type&quot;,
     x = &quot;Event Type&quot;,
     y = &quot;Attendance&quot;) +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 plot_borough =
   ggplot(parkevent, aes(x = borough, y = attendance, fill=borough)) +
@@ -846,7 +846,8 @@ plot_location =
     x = &quot;Location Type&quot;,
     y = &quot;Attendance&quot;) +
    guides(fill = &quot;none&quot;) +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 parkevent_long &lt;- parkevent |&gt; 
   pivot_longer(
@@ -883,9 +884,9 @@ patterns_plot =
     title = &quot;Attendance Patterns Across NYC Parks Events&quot;,
     theme = theme())
 patterns_plot</code></pre>
-<p><img src="Descriptive_Analysis_files/figure-html/unnamed-chunk-4-1.png" width="672" />
-Figure1 displays violin–boxplots of attendance by season, time of day,
-borough, event type, aduience type and location type. These plots
+<p><img src="Descriptive_Analysis_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Figure1 displays violin–boxplots of attendance by season, time of
+day, borough, event type, aduience type and location type. These plots
 summarize both the distribution (violin shape) and central tendency (box
 plot) for each category, allowing visual comparison of how attendance
 varies across park events. We restricted the y-axis to 0–250 attendees
@@ -894,14 +895,13 @@ large events have much higher attendance. Without this limit, those
 extreme values compress the main body of the data and make differences
 between typical events difficult to see.</p>
 </div>
-<div id="figure-2-audience-composition-by-borough"
-class="section level3">
-<h3>Figure 2: Audience Composition by Borough</h3>
+<div id="figure-2-audience-composition-by-month" class="section level3">
+<h3>Figure 2: Audience Composition by Month</h3>
 <pre class="r"><code>ggplot(parkevent_long,
        aes(x = month, fill = audience_type)) +
   geom_bar(position = &quot;fill&quot;) +
   labs(
-    title = &quot;Audience Composition by Borough&quot;,
+    title = &quot;Audience Composition by Month&quot;,
     x = &quot;Month&quot;,
     y = &quot;Proportion&quot;,
     fill = &quot;Audience Type&quot;
@@ -920,8 +920,8 @@ family-oriented programming dominates most of the year, while
 adult-focused events become relatively more common during colder
 months.</p>
 </div>
-<div id="figure-3-intercation-figures" class="section level3">
-<h3>Figure 3: Intercation Figures</h3>
+<div id="figure-3-seasonal-attendance-patterns" class="section level3">
+<h3>Figure 3: Seasonal Attendance Patterns</h3>
 <pre class="r"><code>plot_time_season =
   parkevent |&gt;
   group_by(time_period, season) |&gt;

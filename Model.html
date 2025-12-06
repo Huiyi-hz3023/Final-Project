@@ -436,12 +436,28 @@ b &lt;- ggplot(parkevent, aes(x = attendance)) +
 
 a+b</code></pre>
 <p><img src="Model_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<pre class="r"><code>mean_var &lt;- parkevent %&gt;%
-  summarise(mean_att = mean(attendance), var_att = var(attendance))
+<pre class="r"><code>mean_var &lt;- parkevent |&gt;
+  summarise(mean_att = mean(attendance), var_att = var(attendance)) |&gt;
+  rename(
+    `Mean Attendance`   = mean_att,
+    `Variance of Attendance` = var_att)
 
-mean_var</code></pre>
-<pre><code>##   mean_att  var_att
-## 1 74.44136 10191.33</code></pre>
+knitr::kable(mean_var, digits = 2, caption = &quot;Mean and Variance of Event Attendance&quot;)</code></pre>
+<table>
+<caption>Mean and Variance of Event Attendance</caption>
+<thead>
+<tr class="header">
+<th align="right">Mean Attendance</th>
+<th align="right">Variance of Attendance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">74.44</td>
+<td align="right">10191.33</td>
+</tr>
+</tbody>
+</table>
 <p>Exploratory plots revealed that attendance is highly right-skewed
 with a long tail, and the variance greatly exceeds the mean, indicating
 overdispersion. These characteristics justify the use of non-parametric
@@ -495,18 +511,63 @@ kw_results &lt;- kw_results |&gt;
   ))
 
 kw_results |&gt;
-  dplyr::select (variable, p.value, effect_strength)</code></pre>
-<pre><code>## # A tibble: 8 × 3
-##   variable         p.value effect_strength
-##   &lt;chr&gt;              &lt;dbl&gt; &lt;chr&gt;          
-## 1 season          3.73e-10 small          
-## 2 time_period     3.22e-10 small          
-## 3 borough         1.29e-29 small          
-## 4 event_type      1.31e-39 medium         
-## 5 location_type   2.51e-50 medium         
-## 6 kids_friendly   1.36e- 8 small          
-## 7 senior_friendly 1.02e- 9 small          
-## 8 adults_only     1.36e- 8 small</code></pre>
+  dplyr::select (variable, p.value, effect_strength) |&gt;
+  dplyr::mutate(
+    p.value = format(p.value, scientific = TRUE, digits = 3)) |&gt;
+  knitr::kable(caption = &quot;Kruskal–Wallis Test Results: P-values and Effect Size Classification&quot;)</code></pre>
+<table>
+<caption>Kruskal–Wallis Test Results: P-values and Effect Size
+Classification</caption>
+<thead>
+<tr class="header">
+<th align="left">variable</th>
+<th align="left">p.value</th>
+<th align="left">effect_strength</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">season</td>
+<td align="left">3.73e-10</td>
+<td align="left">small</td>
+</tr>
+<tr class="even">
+<td align="left">time_period</td>
+<td align="left">3.22e-10</td>
+<td align="left">small</td>
+</tr>
+<tr class="odd">
+<td align="left">borough</td>
+<td align="left">1.29e-29</td>
+<td align="left">small</td>
+</tr>
+<tr class="even">
+<td align="left">event_type</td>
+<td align="left">1.31e-39</td>
+<td align="left">medium</td>
+</tr>
+<tr class="odd">
+<td align="left">location_type</td>
+<td align="left">2.51e-50</td>
+<td align="left">medium</td>
+</tr>
+<tr class="even">
+<td align="left">kids_friendly</td>
+<td align="left">1.36e-08</td>
+<td align="left">small</td>
+</tr>
+<tr class="odd">
+<td align="left">senior_friendly</td>
+<td align="left">1.02e-09</td>
+<td align="left">small</td>
+</tr>
+<tr class="even">
+<td align="left">adults_only</td>
+<td align="left">1.36e-08</td>
+<td align="left">small</td>
+</tr>
+</tbody>
+</table>
 <p>Across all predictors, the Kruskal–Wallis tests indicated
 statistically significant differences in attendance (p &lt; 0.05), with
 effect sizes ranging from very small to medium. Variables with medium η²
@@ -561,13 +622,29 @@ cv_results &lt;- tibble(
   mean_RMSE = c(rmse_simple, rmse_medium, rmse_full)
 )
 
-cv_results</code></pre>
-<pre><code>## # A tibble: 3 × 2
-##   model  mean_RMSE
-##   &lt;chr&gt;      &lt;dbl&gt;
-## 1 Simple      1.46
-## 2 Medium      1.43
-## 3 Full        1.43</code></pre>
+cv_results |&gt; knitr::kable(digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">model</th>
+<th align="right">mean_RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Simple</td>
+<td align="right">1.46</td>
+</tr>
+<tr class="even">
+<td align="left">Medium</td>
+<td align="right">1.43</td>
+</tr>
+<tr class="odd">
+<td align="left">Full</td>
+<td align="right">1.43</td>
+</tr>
+</tbody>
+</table>
 <p>Cross-validated RMSE values were similar across the three candidate
 models, with the Full model achieving the lowest prediction error (RMSE
 = 1.4263). Although the difference is modest, the Full model provided
@@ -581,72 +658,242 @@ Negative Binomial regression:</p>
   data = parkevent
 )
 
-summary(model_nb)</code></pre>
-<pre><code>## 
-## Call:
-## glm.nb(formula = attendance ~ season + time_period + borough + 
-##     event_type + location_type + kids_friendly + senior_friendly + 
-##     adults_only, data = parkevent, init.theta = 0.704662887, 
-##     link = log)
-## 
-## Coefficients: (1 not defined because of singularities)
-##                                  Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)                       2.88723    0.47000   6.143 8.10e-10 ***
-## seasonSpring                      0.06920    0.09484   0.730 0.465620    
-## seasonSummer                     -0.02760    0.06053  -0.456 0.648425    
-## seasonWinter                     -0.26200    0.14958  -1.752 0.079835 .  
-## time_periodMidnight              -0.14997    0.07571  -1.981 0.047606 *  
-## time_periodMorning               -0.30563    0.08958  -3.412 0.000645 ***
-## time_periodNight                 -0.07915    0.06065  -1.305 0.191891    
-## boroughBrooklyn                   0.12514    0.08634   1.449 0.147251    
-## boroughManhattan                  0.49176    0.07347   6.694 2.18e-11 ***
-## boroughQueens                     0.22247    0.07468   2.979 0.002893 ** 
-## boroughStaten Island              0.33796    0.08595   3.932 8.42e-05 ***
-## event_typeCommunity Based Event   0.28796    0.07012   4.107 4.01e-05 ***
-## event_typeLocal Event             0.03146    0.09585   0.328 0.742789    
-## event_typeOpen House              0.21821    0.41224   0.529 0.596567    
-## event_typeTournament/Competition  0.76272    0.36933   2.065 0.038910 *  
-## location_typeOther                0.73997    0.47289   1.565 0.117638    
-## location_typePark                 0.68924    0.46332   1.488 0.136854    
-## location_typePlayground           0.26473    0.46727   0.567 0.571021    
-## location_typePool                -0.58996    0.47016  -1.255 0.209548    
-## location_typeRecreation Center    0.26397    0.46627   0.566 0.571294    
-## location_typeSchool               1.38397    0.47894   2.890 0.003857 ** 
-## kids_friendlyTRUE                 0.55435    0.09367   5.918 3.25e-09 ***
-## senior_friendlyTRUE               0.05158    0.06421   0.803 0.421785    
-## adults_onlyTRUE                        NA         NA      NA       NA    
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## (Dispersion parameter for Negative Binomial(0.7047) family taken to be 1)
-## 
-##     Null deviance: 3419.9  on 2446  degrees of freedom
-## Residual deviance: 2958.1  on 2424  degrees of freedom
-## AIC: 25237
-## 
-## Number of Fisher Scoring iterations: 1
-## 
-## 
-##               Theta:  0.7047 
-##           Std. Err.:  0.0192 
-## 
-##  2 x log-likelihood:  -25189.1510</code></pre>
-<pre class="r"><code>irr_table &lt;- tidy(model_nb, conf.int = TRUE, exponentiate = TRUE)
-irr_table</code></pre>
-<pre><code>## # A tibble: 23 × 7
-##    term                estimate std.error statistic  p.value conf.low conf.high
-##    &lt;chr&gt;                  &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
-##  1 (Intercept)           17.9      0.470      6.14  8.10e-10    7.99     51.6  
-##  2 seasonSpring           1.07     0.0948     0.730 4.66e- 1    0.891     1.29 
-##  3 seasonSummer           0.973    0.0605    -0.456 6.48e- 1    0.863     1.10 
-##  4 seasonWinter           0.770    0.150     -1.75  7.98e- 2    0.580     1.04 
-##  5 time_periodMidnight    0.861    0.0757    -1.98  4.76e- 2    0.742     1.00 
-##  6 time_periodMorning     0.737    0.0896    -3.41  6.45e- 4    0.616     0.885
-##  7 time_periodNight       0.924    0.0606    -1.31  1.92e- 1    0.820     1.04 
-##  8 boroughBrooklyn        1.13     0.0863     1.45  1.47e- 1    0.961     1.34 
-##  9 boroughManhattan       1.64     0.0735     6.69  2.18e-11    1.43      1.88 
-## 10 boroughQueens          1.25     0.0747     2.98  2.89e- 3    1.08      1.45 
-## # ℹ 13 more rows</code></pre>
+irr_table &lt;- tidy(model_nb, conf.int = TRUE, exponentiate = TRUE)
+irr_table |&gt;  
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %&gt;%
+  knitr::kable(caption = &quot;Negative Binomial Model Results&quot;)</code></pre>
+<table style="width:100%;">
+<caption>Negative Binomial Model Results</caption>
+<colgroup>
+<col width="37%" />
+<col width="10%" />
+<col width="11%" />
+<col width="11%" />
+<col width="8%" />
+<col width="10%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">17.944</td>
+<td align="right">0.470</td>
+<td align="right">6.143</td>
+<td align="right">0.000</td>
+<td align="right">7.991</td>
+<td align="right">51.611</td>
+</tr>
+<tr class="even">
+<td align="left">seasonSpring</td>
+<td align="right">1.072</td>
+<td align="right">0.095</td>
+<td align="right">0.730</td>
+<td align="right">0.466</td>
+<td align="right">0.891</td>
+<td align="right">1.293</td>
+</tr>
+<tr class="odd">
+<td align="left">seasonSummer</td>
+<td align="right">0.973</td>
+<td align="right">0.061</td>
+<td align="right">-0.456</td>
+<td align="right">0.648</td>
+<td align="right">0.863</td>
+<td align="right">1.095</td>
+</tr>
+<tr class="even">
+<td align="left">seasonWinter</td>
+<td align="right">0.770</td>
+<td align="right">0.150</td>
+<td align="right">-1.752</td>
+<td align="right">0.080</td>
+<td align="right">0.580</td>
+<td align="right">1.040</td>
+</tr>
+<tr class="odd">
+<td align="left">time_periodMidnight</td>
+<td align="right">0.861</td>
+<td align="right">0.076</td>
+<td align="right">-1.981</td>
+<td align="right">0.048</td>
+<td align="right">0.742</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="even">
+<td align="left">time_periodMorning</td>
+<td align="right">0.737</td>
+<td align="right">0.090</td>
+<td align="right">-3.412</td>
+<td align="right">0.001</td>
+<td align="right">0.616</td>
+<td align="right">0.885</td>
+</tr>
+<tr class="odd">
+<td align="left">time_periodNight</td>
+<td align="right">0.924</td>
+<td align="right">0.061</td>
+<td align="right">-1.305</td>
+<td align="right">0.192</td>
+<td align="right">0.820</td>
+<td align="right">1.041</td>
+</tr>
+<tr class="even">
+<td align="left">boroughBrooklyn</td>
+<td align="right">1.133</td>
+<td align="right">0.086</td>
+<td align="right">1.449</td>
+<td align="right">0.147</td>
+<td align="right">0.961</td>
+<td align="right">1.341</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughManhattan</td>
+<td align="right">1.635</td>
+<td align="right">0.073</td>
+<td align="right">6.694</td>
+<td align="right">0.000</td>
+<td align="right">1.427</td>
+<td align="right">1.876</td>
+</tr>
+<tr class="even">
+<td align="left">boroughQueens</td>
+<td align="right">1.249</td>
+<td align="right">0.075</td>
+<td align="right">2.979</td>
+<td align="right">0.003</td>
+<td align="right">1.080</td>
+<td align="right">1.448</td>
+</tr>
+<tr class="odd">
+<td align="left">boroughStaten Island</td>
+<td align="right">1.402</td>
+<td align="right">0.086</td>
+<td align="right">3.932</td>
+<td align="right">0.000</td>
+<td align="right">1.189</td>
+<td align="right">1.660</td>
+</tr>
+<tr class="even">
+<td align="left">event_typeCommunity Based Event</td>
+<td align="right">1.334</td>
+<td align="right">0.070</td>
+<td align="right">4.107</td>
+<td align="right">0.000</td>
+<td align="right">1.160</td>
+<td align="right">1.531</td>
+</tr>
+<tr class="odd">
+<td align="left">event_typeLocal Event</td>
+<td align="right">1.032</td>
+<td align="right">0.096</td>
+<td align="right">0.328</td>
+<td align="right">0.743</td>
+<td align="right">0.855</td>
+<td align="right">1.248</td>
+</tr>
+<tr class="even">
+<td align="left">event_typeOpen House</td>
+<td align="right">1.244</td>
+<td align="right">0.412</td>
+<td align="right">0.529</td>
+<td align="right">0.597</td>
+<td align="right">0.602</td>
+<td align="right">3.110</td>
+</tr>
+<tr class="odd">
+<td align="left">event_typeTournament/Competition</td>
+<td align="right">2.144</td>
+<td align="right">0.369</td>
+<td align="right">2.065</td>
+<td align="right">0.039</td>
+<td align="right">1.108</td>
+<td align="right">4.849</td>
+</tr>
+<tr class="even">
+<td align="left">location_typeOther</td>
+<td align="right">2.096</td>
+<td align="right">0.473</td>
+<td align="right">1.565</td>
+<td align="right">0.118</td>
+<td align="right">0.724</td>
+<td align="right">4.764</td>
+</tr>
+<tr class="odd">
+<td align="left">location_typePark</td>
+<td align="right">1.992</td>
+<td align="right">0.463</td>
+<td align="right">1.488</td>
+<td align="right">0.137</td>
+<td align="right">0.699</td>
+<td align="right">4.407</td>
+</tr>
+<tr class="even">
+<td align="left">location_typePlayground</td>
+<td align="right">1.303</td>
+<td align="right">0.467</td>
+<td align="right">0.567</td>
+<td align="right">0.571</td>
+<td align="right">0.455</td>
+<td align="right">2.910</td>
+</tr>
+<tr class="odd">
+<td align="left">location_typePool</td>
+<td align="right">0.554</td>
+<td align="right">0.470</td>
+<td align="right">-1.255</td>
+<td align="right">0.210</td>
+<td align="right">0.192</td>
+<td align="right">1.248</td>
+</tr>
+<tr class="even">
+<td align="left">location_typeRecreation Center</td>
+<td align="right">1.302</td>
+<td align="right">0.466</td>
+<td align="right">0.566</td>
+<td align="right">0.571</td>
+<td align="right">0.455</td>
+<td align="right">2.903</td>
+</tr>
+<tr class="odd">
+<td align="left">location_typeSchool</td>
+<td align="right">3.991</td>
+<td align="right">0.479</td>
+<td align="right">2.890</td>
+<td align="right">0.004</td>
+<td align="right">1.366</td>
+<td align="right">9.224</td>
+</tr>
+<tr class="even">
+<td align="left">kids_friendlyTRUE</td>
+<td align="right">1.741</td>
+<td align="right">0.094</td>
+<td align="right">5.918</td>
+<td align="right">0.000</td>
+<td align="right">1.454</td>
+<td align="right">2.074</td>
+</tr>
+<tr class="odd">
+<td align="left">senior_friendlyTRUE</td>
+<td align="right">1.053</td>
+<td align="right">0.064</td>
+<td align="right">0.803</td>
+<td align="right">0.422</td>
+<td align="right">0.932</td>
+<td align="right">1.187</td>
+</tr>
+</tbody>
+</table>
 <p>In this model, attendance is modeled as a function of season, time of
 day, borough, event type, location type, and audience indicators. We
 exponentiate the coefficients to obtain incidence rate ratios (IRRs) and
@@ -656,22 +903,42 @@ others constant.</p>
 <p>The Negative Binomial model shows that several event characteristics
 are strongly associated with attendance.<br />
 Compared with spring events, winter events have significantly lower
-expected attendance (IRR = 0.73, 95% CI: 0.54–1.00), while summer and
+expected attendance (IRR = 0.77, 95% CI: 0.58–1.04), while summer and
 fall do not differ significantly from spring.</p>
 <p>Afternoon and night events attract more participants than morning
-events (Afternoon: IRR = 1.35, 95% CI: 1.12–1.61; Night: IRR = 1.25, 95%
-CI: 1.03–1.51). Relative to Bronx, events in Manhattan, Queens, and
-Staten Island show higher attendance (IRRs ≈ 1.28–1.68), with Manhattan
-having the largest effect.</p>
+events (Afternoon: IRR = , 95% CI: –; Night: IRR = 0.92, 95% CI:
+0.82–1.04). Relative to Bronx, events in Manhattan, Queens, and Staten
+Island show higher attendance (IRRs ≈ 1.25-1.64), with Manhattan having
+the largest effect.</p>
 <p>Community-based events have higher attendance than Agency Produced
-events (IRR = 1.31, 95% CI: 1.14–1.50), and events held in schools and
-parks are particularly well-attended (School: IRR = 4.17, 95% CI:
-1.43–9.64; Park: IRR = 1.98, 95% CI: 1.00–4.38).</p>
-<p>For the audience, adults-only events draw substantially fewer
-participants than events that are open to children or seniors (IRR =
-0.44, 95% CI: 0.27–0.69), while the kids-friendly and senior-friendly
-indicators are not individually significant after adjustment for other
+events (IRR = 1.33, 95% CI: 1.16–1.53), and events held in schools and
+parks are particularly well-attended (School: IRR = 3.99, 95% CI:
+1.37–9.22; Park: IRR = 1.99, 95% CI: 0.70–4.41).</p>
+<p>For the audience, the kids-friendly and senior-friendly indicators
+are not individually significant after adjustment for other
 covariates.</p>
+<pre class="r"><code>irr_table2 &lt;- irr_table %&gt;%
+  filter(term != &quot;(Intercept)&quot;) %&gt;%
+  mutate(
+    significant = ifelse(conf.low &gt; 1 | conf.high &lt; 1, &quot;Significant&quot;, &quot;Not Significant&quot;)
+  )
+
+ggplot(irr_table2, aes(x = reorder(term, estimate), y = estimate,
+                       color = significant)) +
+  geom_point(size = 3) +
+   geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.2) +
+  geom_hline(yintercept = 1, linetype = &quot;dashed&quot;) +
+  scale_color_manual(values = c(&quot;Significant&quot; = &quot;red&quot;, 
+                                &quot;Not Significant&quot; = &quot;steelblue&quot;)) +
+  coord_flip() +
+  labs(
+    title = &quot;Incidence Rate Ratios (IRRs) with 95% Confidence Intervals&quot;,
+    x = &quot;Predictor&quot;,
+    y = &quot;IRR&quot;,
+    color = &quot;&quot;
+  ) +
+  theme_minimal(base_size = 13)</code></pre>
+<p><img src="Model_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 </div>
 
