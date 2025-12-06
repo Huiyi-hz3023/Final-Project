@@ -119,3 +119,8 @@ To improve interpretability of audience demographics, we split raw audience text
 We removed variables that were administrative, redundant, or not analytically meaningful (e.g., raw datetime strings, internal IDs, partner names, audience parsing intermediates). Rows with missing or empty values for key variables such as event_type, category, or attendance were dropped to ensure analytic consistency.    
 
 These steps produced a streamlined, well-structured dataset that supports valid comparisons across seasons, times of day, boroughs, event types, and audience groups.
+
+<a href="data/parkevent_clean.csv" download class="btn btn-primary" 
+   style="color: white; text-decoration: none;">
+  Download Dataset (CSV)
+</a>
