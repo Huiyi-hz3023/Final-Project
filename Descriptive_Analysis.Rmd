@@ -14,6 +14,7 @@ library(tidyverse)
 library(knitr)
 library(ggplot2)
 library(patchwork)
+library(plotly)
 parkevent = read.csv("parkevent_clean.csv")
 ```
 
@@ -86,6 +87,7 @@ plot_season =
   labs(title = "By Season", x = "Season", y = "Attendance") +
   guides(fill = "none") +
   theme_minimal()
+
 
 plot_time =
   ggplot(parkevent, aes(x = time_period, y = attendance, fill=time_period)) +
@@ -198,17 +200,43 @@ Figure1 displays violin–boxplots of attendance by season, time of day, borough
 
 ### Figure 2: Audience Composition by Month
 
-```{r message = FALSE, warning = FALSE}
-ggplot(parkevent_long,
-       aes(x = month, fill = audience_type)) +
-  geom_bar(position = "fill") +
-  labs(
+```{r}
+audience_month <- parkevent_long %>%
+  group_by(month, audience_type) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(month) %>%
+  mutate(prop = count / sum(count)) %>%
+  ungroup() %>%
+  mutate(
+    month = factor(
+      month,
+      levels = c("Jan","Feb","Mar","Apr","May","Jun",
+                 "Jul","Aug","Sep","Oct","Nov","Dec")))
+
+fig_audience <- plot_ly(
+  audience_month,
+  x = ~month,
+  y = ~prop,
+  type = "bar",
+  color = ~audience_type,
+  colors = c("Adults" = "tomato",
+             "Kids" = "seagreen3",
+             "Seniors" = "steelblue"),
+  hovertemplate = paste(
+    "<b>%{x}</b><br>",
+    "Audience: %{customdata}<br>",
+    "Proportion: %{y:.1%}<extra></extra>"
+  ),
+  customdata = ~audience_type
+) %>%
+  layout(
+    barmode = "stack",
     title = "Audience Composition by Month",
-    x = "Month",
-    y = "Proportion",
-    fill = "Audience Type"
-  ) +
-  theme_minimal()
+    yaxis = list(title = "Proportion", tickformat = ".0%"),
+    xaxis = list(title = "Month")
+  )
+
+fig_audience 
 ```
     
 Figure 2 shows how audience composition varies across months for NYC park events. Kids-friendly events consistently represent the largest share throughout the year, especially from April to October, indicating strong family engagement during warmer months. Senior-friendly events also maintain a substantial and steady presence, peaking in early spring and again in late summer. Adults-only events fluctuate more noticeably, with higher proportions in winter months such as January and December. Overall, the chart highlights seasonal shifts in audience needs: family-oriented programming dominates most of the year, while adult-focused events become relatively more common during colder months.    

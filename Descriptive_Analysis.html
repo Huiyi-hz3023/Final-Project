@@ -36,6 +36,14 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.11.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -780,6 +788,7 @@ class="section level3">
   guides(fill = &quot;none&quot;) +
   theme_minimal()
 
+
 plot_time =
   ggplot(parkevent, aes(x = time_period, y = attendance, fill=time_period)) +
   geom_violin(trim = FALSE, alpha = 0.5) +
@@ -897,17 +906,44 @@ between typical events difficult to see.</p>
 </div>
 <div id="figure-2-audience-composition-by-month" class="section level3">
 <h3>Figure 2: Audience Composition by Month</h3>
-<pre class="r"><code>ggplot(parkevent_long,
-       aes(x = month, fill = audience_type)) +
-  geom_bar(position = &quot;fill&quot;) +
-  labs(
+<pre class="r"><code>audience_month &lt;- parkevent_long %&gt;%
+  group_by(month, audience_type) %&gt;%
+  summarise(count = n(), .groups = &quot;drop&quot;) %&gt;%
+  group_by(month) %&gt;%
+  mutate(prop = count / sum(count)) %&gt;%
+  ungroup() %&gt;%
+  mutate(
+    month = factor(
+      month,
+      levels = c(&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;,&quot;Apr&quot;,&quot;May&quot;,&quot;Jun&quot;,
+                 &quot;Jul&quot;,&quot;Aug&quot;,&quot;Sep&quot;,&quot;Oct&quot;,&quot;Nov&quot;,&quot;Dec&quot;)))
+
+fig_audience &lt;- plot_ly(
+  audience_month,
+  x = ~month,
+  y = ~prop,
+  type = &quot;bar&quot;,
+  color = ~audience_type,
+  colors = c(&quot;Adults&quot; = &quot;tomato&quot;,
+             &quot;Kids&quot; = &quot;seagreen3&quot;,
+             &quot;Seniors&quot; = &quot;steelblue&quot;),
+  hovertemplate = paste(
+    &quot;&lt;b&gt;%{x}&lt;/b&gt;&lt;br&gt;&quot;,
+    &quot;Audience: %{customdata}&lt;br&gt;&quot;,
+    &quot;Proportion: %{y:.1%}&lt;extra&gt;&lt;/extra&gt;&quot;
+  ),
+  customdata = ~audience_type
+) %&gt;%
+  layout(
+    barmode = &quot;stack&quot;,
     title = &quot;Audience Composition by Month&quot;,
-    x = &quot;Month&quot;,
-    y = &quot;Proportion&quot;,
-    fill = &quot;Audience Type&quot;
-  ) +
-  theme_minimal()</code></pre>
-<p><img src="Descriptive_Analysis_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+    yaxis = list(title = &quot;Proportion&quot;, tickformat = &quot;.0%&quot;),
+    xaxis = list(title = &quot;Month&quot;)
+  )
+
+fig_audience </code></pre>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-6cddd11c52fe76078f58" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-6cddd11c52fe76078f58">{"x":{"visdat":{"d8c454ca766e":["function () ","plotlyVisDat"]},"cur_data":"d8c454ca766e","attrs":{"d8c454ca766e":{"x":{},"y":{},"hovertemplate":"<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","customdata":{},"color":{},"colors":["tomato","seagreen3","steelblue"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"barmode":"stack","title":"Audience Composition by Month","yaxis":{"domain":[0,1],"automargin":true,"title":"Proportion","tickformat":".0%"},"xaxis":{"domain":[0,1],"automargin":true,"title":"Month","type":"category","categoryorder":"array","categoryarray":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Apr","Aug","Dec","Feb","Jan","Jul","Jun","Mar","May","Nov","Oct","Sep"],"y":[0.10891089108910891,0.023762376237623763,0.32142857142857145,0.18461538461538463,0.38461538461538464,0.034810126582278479,0.065934065934065936,0.29268292682926828,0.1111111111111111,0.22388059701492538,0.080091533180778038,0.024509803921568627],"hovertemplate":["<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>"],"customdata":["Adults","Adults","Adults","Adults","Adults","Adults","Adults","Adults","Adults","Adults","Adults","Adults"],"type":"bar","name":"Adults","marker":{"color":"rgba(255,99,71,1)","line":{"color":"rgba(255,99,71,1)"}},"textfont":{"color":"rgba(255,99,71,1)"},"error_y":{"color":"rgba(255,99,71,1)"},"error_x":{"color":"rgba(255,99,71,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Apr","Aug","Dec","Feb","Jan","Jul","Jun","Mar","May","Nov","Oct","Sep"],"y":[0.50495049504950495,0.55049504950495054,0.42857142857142855,0.41538461538461541,0.38461538461538464,0.57594936708860756,0.49633699633699635,0.43902439024390244,0.5163398692810458,0.37313432835820898,0.49199084668192222,0.5163398692810458],"hovertemplate":["<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>"],"customdata":["Kids","Kids","Kids","Kids","Kids","Kids","Kids","Kids","Kids","Kids","Kids","Kids"],"type":"bar","name":"Kids","marker":{"color":"rgba(67,205,128,1)","line":{"color":"rgba(67,205,128,1)"}},"textfont":{"color":"rgba(67,205,128,1)"},"error_y":{"color":"rgba(67,205,128,1)"},"error_x":{"color":"rgba(67,205,128,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Apr","Aug","Dec","Feb","Jan","Jul","Jun","Mar","May","Nov","Oct","Sep"],"y":[0.38613861386138615,0.42574257425742573,0.25,0.40000000000000002,0.23076923076923078,0.38924050632911394,0.43772893772893773,0.26829268292682928,0.37254901960784315,0.40298507462686567,0.42791762013729978,0.4591503267973856],"hovertemplate":["<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>","<b>%{x}<\/b><br> Audience: %{customdata}<br> Proportion: %{y:.1%}<extra><\/extra>"],"customdata":["Seniors","Seniors","Seniors","Seniors","Seniors","Seniors","Seniors","Seniors","Seniors","Seniors","Seniors","Seniors"],"type":"bar","name":"Seniors","marker":{"color":"rgba(70,130,180,1)","line":{"color":"rgba(70,130,180,1)"}},"textfont":{"color":"rgba(70,130,180,1)"},"error_y":{"color":"rgba(70,130,180,1)"},"error_x":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <p>Figure 2 shows how audience composition varies across months for NYC
 park events. Kids-friendly events consistently represent the largest
 share throughout the year, especially from April to October, indicating
