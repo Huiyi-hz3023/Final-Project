@@ -1,0 +1,22 @@
+name: "DS Final Project"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "Home"
+      href: home.html
+    - text: "Data Exploration"
+      href: Descriptive_Analysis.html     
+    - text: "Data Analysis"
+      href: Data_Analysis.html
+    - text: "Model"
+      href: Model.html     
+    - text: "Project Report"
+      href: Project_Report.html
+    - icon: fa-envelope fa-lg
+      href: mailto:<you@youremail.com>
+    - icon: fa-github fa-lg
+      href: https://github.com/Huiyi-hz3023/Final-Project  
+output:
+  html_document:
+    theme: cosmo

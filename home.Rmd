@@ -1,0 +1,21 @@
+---
+title: "Home"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+## (Research Topic)
+
+<iframe width="800" height="450"
+        src="https://www.youtube.com/embed/JDdLdAUY-vc&list=PLD14Rz0JtYhiUdqmjQN4totfX31Rz2RMq&index=2"
+        allowfullscreen></iframe>
+
+## Motivation
+
+
+## Team Member
+Here is a picture of our team-building event.
+
+![](images/IMG_5104.JPG){width=40%}

@@ -1,11 +1,16 @@
-data clean
-================
+---
+title: "Data Exploration"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
 Huiyi Zhu
-2025-12-04
-
-## prepare
-
-``` r
+      
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(janitor)
 library(ggplot2)
@@ -13,21 +18,28 @@ library(patchwork)
 library(RColorBrewer)
 ```
 
-outcome: attendance variables: season, event type, borough, location
-type, time of date
+Outcome: attendance   
+Variables: season, event type, borough, location type, time of date
 
-Miranda Chen: model (before 11:59PM Friday) Huiyi Zhu: clean data
-(date:2022.5-present, morning5-12 afternoon 12-6 night 6-1 midnight?) +
-basic descriptive analysis Yiyang Jiao: report+video (9:00PM Sat)
-Xiaoqian Lyu: report Yuyue Ma: web(sat)
-
-``` r
+## Data Source
+Dataset will be the [*Parks Special Events*](https://data.cityofnewyork.us/Recreation/Parks-Special-Events/6v4b-5gp4/about_data) from *NYC Open Data*. This data set includes detailed information on public events held in New York City parks.    
+  
+Relevant indices include:  
+- Group Name/Partner    
+- Borough     
+- Location      
+- Event Name & Type     
+- Attendance      
+- Category    
+  
+```{r message = FALSE, warning = FALSE}
 raw = read.csv("Parks_Special_Events_20251204.csv")
 ```
-
+  
+  
 ## Data Cleaning
-
-``` r
+  
+```{r message = FALSE, warning = FALSE}
 parkevent = read.csv("Parks_Special_Events_20251204.csv") |>
   janitor::clean_names() |>
   mutate(
@@ -88,66 +100,25 @@ parkevent = read.csv("Parks_Special_Events_20251204.csv") |>
            category != "",
            attendance != "")
 ```
+  
+We cleaned the dataset to prepare it for analyzing attendance as the primary outcome and key predictors including season, event_type, borough, location_type, and time_period. Date-time information was parsed into date, year, month, and day to support temporal analyses, and time_period was created to evaluate differences across times of day. We filtered observations to the NYC fully reopened period after COVID (date >= "2021-06-01") to avoid pandemic-related disruptions. Columns not relevant to the analysis were removed, and rows with empty event_type, category and attendance values were dropped. After cleaning, we have `r nrow(parkevent)` observations and `r ncol(parkevent)` variables. These steps produced a tidy dataset aligned with our study.
 
-    ## Warning: There was 1 warning in `mutate()`.
-    ## ℹ In argument: `attendance = as.numeric(attendance)`.
-    ## Caused by warning:
-    ## ! NAs introduced by coercion
+How we cleaned the audience type: We first standardized the audience field by splitting each entry into individual audience categories (e.g., “Children,” “Adults,” “Seniors,” “General Public”). Based on these cleaned components, we created three binary indicators to capture the accessibility of each event to key demographic groups.
 
-We cleaned the dataset to prepare it for analyzing attendance as the
-primary outcome and key predictors including season, event_type,
-borough, location_type, and time_period. Date-time information was
-parsed into date, year, month, and day to support temporal analyses, and
-time_period was created to evaluate differences across times of day. We
-filtered observations to the NYC fully reopened period after COVID (date
-\>= “2021-06-01”) to avoid pandemic-related disruptions. Columns not
-relevant to the analysis were removed, and rows with empty event_type,
-category and attendance values were dropped. After cleaning, we have
-2447 observations and 15 variables. These steps produced a tidy dataset
-aligned with our study.
+An event was classified as kids-friendly if its audience included Children/Tot or was labeled as General Public. Similarly, an event was marked as senior-friendly if Seniors were listed or if the audience was General Public. Finally, we defined adults-only events as those not classified as kids-friendly, meaning no child-oriented groups were present in the audience description.
 
-How we cleaned the audience type: We first standardized the audience
-field by splitting each entry into individual audience categories (e.g.,
-“Children,” “Adults,” “Seniors,” “General Public”). Based on these
-cleaned components, we created three binary indicators to capture the
-accessibility of each event to key demographic groups.
-
-An event was classified as kids-friendly if its audience included
-Children/Tot or was labeled as General Public. Similarly, an event was
-marked as senior-friendly if Seniors were listed or if the audience was
-General Public. Finally, we defined adults-only events as those not
-classified as kids-friendly, meaning no child-oriented groups were
-present in the audience description.
-
-Dropped the unnecessary variables generated during the process
-
-``` r
+Dropped the unnecessary variables generated during the process.  
+      
+        
+```{r message = FALSE, warning = FALSE}
 parkevent %>% count(kids_friendly)
-```
-
-    ##   kids_friendly    n
-    ## 1         FALSE  252
-    ## 2          TRUE 2195
-
-``` r
 parkevent %>% count(senior_friendly)
-```
-
-    ##   senior_friendly    n
-    ## 1           FALSE  718
-    ## 2            TRUE 1729
-
-``` r
 parkevent %>% count(adults_only)
 ```
-
-    ##   adults_only    n
-    ## 1       FALSE 2228
-    ## 2        TRUE  219
-
-## Descriptive Analysis
-
-``` r
+  
+  
+## Descriptive Analysis 
+```{r message = FALSE, warning = FALSE}
 parkevent |>
   summarize(
     mean_attendance = mean(attendance),
@@ -158,18 +129,10 @@ parkevent |>
   knitr::kable(digits = 2)
 ```
 
-| mean_attendance | median_attendance | sd_attendance | min_attendance | max_attendance |
-|---:|---:|---:|---:|---:|
-| 74.44 | 39 | 100.95 | 0 | 861 |
+This table summarizes the distribution of attendance across all post-COVID events, including the mean, median, variability, and range of turnout. These descriptive statistics provide an essential baseline for understanding overall engagement levels and for comparing attendance across seasons, event types, boroughs, and time-of-day categories in subsequent analyses.  
+  
 
-This table summarizes the distribution of attendance across all
-post-COVID events, including the mean, median, variability, and range of
-turnout. These descriptive statistics provide an essential baseline for
-understanding overall engagement levels and for comparing attendance
-across seasons, event types, boroughs, and time-of-day categories in
-subsequent analyses.
-
-``` r
+```{r message = FALSE, warning = FALSE}
 plot_season =
   ggplot(parkevent, aes(x = season, y = attendance, fill=season)) +
   geom_violin(trim = FALSE, alpha = 0.5) +
@@ -286,29 +249,16 @@ patterns_plot =
     title = "Attendance Patterns Across NYC Parks Events",
     theme = theme())
 patterns_plot
+
 ```
 
-![](data_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+Figure above displays violin–boxplots of attendance by season, time of day, borough, event type, aduience type and location type. These plots summarize both the distribution (violin shape) and central tendency (box plot) for each category, allowing visual comparison of how attendance varies across park events. We restricted the y-axis to 0–250 attendees because most events fall within this range, while a small number of very large events have much higher attendance. Without this limit, those extreme values compress the main body of the data and make differences between typical events difficult to see.  
+  
 
-Figure displays violin–boxplots of attendance by season, time of day,
-borough, event type, aduience type and location type. These plots
-summarize both the distribution (violin shape) and central tendency (box
-plot) for each category, allowing visual comparison of how attendance
-varies across park events. We restricted the y-axis to 0–250 attendees
-because most events fall within this range, while a small number of very
-large events have much higher attendance. Without this limit, those
-extreme values compress the main body of the data and make differences
-between typical events difficult to see.
-
-``` r
+```{r, message=FALSE, warning=FALSE}
 ggplot(parkevent_long,
        aes(x = month, fill = audience_type)) +
-  geom_bar(position = "fill") 
-```
-
-![](data_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
-
-``` r
+  geom_bar(position = "fill") +
   labs(
     title = "Audience Composition by Borough",
     x = "Month",
@@ -318,21 +268,10 @@ ggplot(parkevent_long,
   theme_minimal()
 ```
 
-    ## NULL
+This stacked bar chart shows how audience composition varies across months for NYC park events. Kids-friendly events consistently represent the largest share throughout the year, especially from April to October, indicating strong family engagement during warmer months. Senior-friendly events also maintain a substantial and steady presence, peaking in early spring and again in late summer. Adults-only events fluctuate more noticeably, with higher proportions in winter months such as January and December. Overall, the chart highlights seasonal shifts in audience needs: family-oriented programming dominates most of the year, while adult-focused events become relatively more common during colder months.  
+  
 
-This stacked bar chart shows how audience composition varies across
-months for NYC park events. Kids-friendly events consistently represent
-the largest share throughout the year, especially from April to October,
-indicating strong family engagement during warmer months.
-Senior-friendly events also maintain a substantial and steady presence,
-peaking in early spring and again in late summer. Adults-only events
-fluctuate more noticeably, with higher proportions in winter months such
-as January and December. Overall, the chart highlights seasonal shifts
-in audience needs: family-oriented programming dominates most of the
-year, while adult-focused events become relatively more common during
-colder months.
-
-``` r
+```{r message = FALSE, warning = FALSE}
 plot_time_season =
   parkevent |>
   group_by(time_period, season) |>
@@ -349,12 +288,7 @@ plot_time_season =
     y = "Mean Attendance",
     color = "Season") +
   theme_minimal()
-```
 
-    ## `summarise()` has grouped output by 'time_period'. You can override
-    ## using the `.groups` argument.
-
-``` r
 plot_borough_season =
   parkevent |>
   group_by(borough, season) |>
@@ -372,12 +306,7 @@ plot_borough_season =
     y = "Mean Attendance",
     color = "borough") +
   theme_minimal()
-```
 
-    ## `summarise()` has grouped output by 'borough'. You can override
-    ## using the `.groups` argument.
-
-``` r
 Seasonal_plot =
   (plot_time_season / plot_borough_season) +
   plot_annotation(
@@ -386,20 +315,11 @@ Seasonal_plot =
 Seasonal_plot
 ```
 
-![](data_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+The first plot shows how mean attendance varies by time of day across seasons. Spring consistently has the highest turnout, especially in the afternoon, while Winter shows the sharpest decline at midnight. Fall attendance remains relatively stable across all times, whereas Summer gradually increases into the evening. The second plot compares mean attendance by seasons across borough. Staten Island and Queens show the highest seasonal peaks, particularly in Spring. Brooklyn and Manhattan maintain moderate attendance across seasons, while the Bronx shows the lowest and least variable averages. Together, these trends highlight clear seasonal and geographic differences in NYC park event engagement.  
+  
 
-The first plot shows how mean attendance varies by time of day across
-seasons. Spring consistently has the highest turnout, especially in the
-afternoon, while Winter shows the sharpest decline at midnight. Fall
-attendance remains relatively stable across all times, whereas Summer
-gradually increases into the evening. The second plot compares mean
-attendance by seasons across borough. Staten Island and Queens show the
-highest seasonal peaks, particularly in Spring. Brooklyn and Manhattan
-maintain moderate attendance across seasons, while the Bronx shows the
-lowest and least variable averages. Together, these trends highlight
-clear seasonal and geographic differences in NYC park event engagement.
 
-``` r
+```{r message = FALSE, warning = FALSE}
 plot_calendar =
   ggplot(parkevent, 
          aes(x = month(date, label = TRUE, abbr = TRUE), 
@@ -418,15 +338,5 @@ plot_calendar =
 plot_calendar
 ```
 
-![](data_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+This plot shows how park event attendance varies throughout the calendar year by combining individual event points with a smoothed monthly trend line. Grey points display the full distribution of attendance for all events, allowing visualization of variability within each month. Monthly averages are overlaid as a blue line to highlight broader seasonal patterns that daily fluctuations may obscure. The results show a dip in February, rising attendance during spring, a slight decline in midsummer, and another increase in October and December. Using monthly means helps reveal consistent seasonal trends while still preserving the underlying data distribution for context and interpretation.
 
-This plot shows how park event attendance varies throughout the calendar
-year by combining individual event points with a smoothed monthly trend
-line. Grey points display the full distribution of attendance for all
-events, allowing visualization of variability within each month. Monthly
-averages are overlaid as a blue line to highlight broader seasonal
-patterns that daily fluctuations may obscure. The results show a dip in
-February, rising attendance during spring, a slight decline in
-midsummer, and another increase in October and December. Using monthly
-means helps reveal consistent seasonal trends while still preserving the
-underlying data distribution for context and interpretation.
