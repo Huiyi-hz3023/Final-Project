@@ -367,19 +367,19 @@ describe_by_group &lt;- function(var) {
       Sum = sum(attendance, na.rm = TRUE),
       .groups = &quot;drop&quot;
     ) |&gt;
-    rename(level = !!var) |&gt;
-    mutate(variable = var)
+    rename(Level = !!var) |&gt;
+    mutate(Variable = var)
 }
 summary_all &lt;- purrr::map_df(table_vars, describe_by_group)
 summary_all &lt;- summary_all |&gt;
-  group_by(variable) |&gt;
+  group_by(Variable) |&gt;
   mutate(variable_disp = if_else(row_number() == 1,
-                                 variable,
+                                 Variable,
                                  &quot;&quot;)) |&gt;
   ungroup()
 knitr::kable(
   summary_all |&gt;
-    select(variable = variable_disp, level, Count, Mean, Median, SD, Min, Max,Sum),
+    select(Variable = variable_disp, Level, Count, Mean, Median, SD, Min, Max,Sum),
   digits  = 2,
   caption = &quot;Attendance Summary by Subgroup&quot;
 )</code></pre>
@@ -398,8 +398,8 @@ knitr::kable(
 </colgroup>
 <thead>
 <tr class="header">
-<th align="left">variable</th>
-<th align="left">level</th>
+<th align="left">Variable</th>
+<th align="left">Level</th>
 <th align="right">Count</th>
 <th align="right">Mean</th>
 <th align="right">Median</th>

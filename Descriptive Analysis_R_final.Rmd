@@ -51,19 +51,19 @@ describe_by_group <- function(var) {
       Sum = sum(attendance, na.rm = TRUE),
       .groups = "drop"
     ) |>
-    rename(level = !!var) |>
-    mutate(variable = var)
+    rename(Level = !!var) |>
+    mutate(Variable = var)
 }
 summary_all <- purrr::map_df(table_vars, describe_by_group)
 summary_all <- summary_all |>
-  group_by(variable) |>
+  group_by(Variable) |>
   mutate(variable_disp = if_else(row_number() == 1,
-                                 variable,
+                                 Variable,
                                  "")) |>
   ungroup()
 knitr::kable(
   summary_all |>
-    select(variable = variable_disp, level, Count, Mean, Median, SD, Min, Max,Sum),
+    select(Variable = variable_disp, Level, Count, Mean, Median, SD, Min, Max,Sum),
   digits  = 2,
   caption = "Attendance Summary by Subgroup"
 )
