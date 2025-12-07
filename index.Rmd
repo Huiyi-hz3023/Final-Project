@@ -10,10 +10,16 @@ output:
 The Pulse of the Park  
 </h1>      
         
-            
+
+<div align="center">
 <iframe width="800" height="450"
-        src="https://www.youtube.com/embed/JDdLdAUY-vc&list=PLD14Rz0JtYhiUdqmjQN4totfX31Rz2RMq&index=2"
-        allowfullscreen></iframe>
+    src="https://www.youtube.com/embed/KSlkt_BXryo"
+    title="The Pulse of the Park Video"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+        </iframe>
+        </div>
 
 ## Motivation
 
