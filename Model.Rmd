@@ -232,8 +232,8 @@ Afternoon and night events attract more participants than morning events (Aftern
 
 Community-based events have higher attendance than Agency Produced events (IRR = `r IRR_vals[["event_typeCommunity Based Event"]]$irr`, 95% CI: `r IRR_vals[["event_typeCommunity Based Event"]]$low`–`r IRR_vals[["event_typeCommunity Based Event"]]$high`), and events held in schools and parks are particularly well-attended (School: IRR = `r IRR_vals$location_typeSchool$irr`, 95% CI: `r IRR_vals$location_typeSchool$low`–`r IRR_vals$location_typeSchool$high`; Park: IRR = `r IRR_vals$location_typePark$irr`, 95% CI: `r IRR_vals$location_typePark$low`–`r IRR_vals$location_typePark$high`).  
 
-For the audience, the kids-friendly and senior-friendly indicators are not individually significant after adjustment for other covariates.   
-
+For the audience, the kids-friendly and senior-friendly indicators are not individually significant after adjustment for other covariates.     
+    
 ```{r}
 irr_table2 <- irr_table %>%
   filter(term != "(Intercept)") %>%
@@ -257,6 +257,5 @@ ggplot(irr_table2, aes(x = reorder(term, estimate), y = estimate,
   ) +
   theme_minimal(base_size = 13)
 ```
+     
 A forest plot of IRRs was created to visually summarize the estimated effects and identify predictors with statistically significant associations with attendance.  
-
-
